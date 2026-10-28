@@ -1,0 +1,11 @@
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+env = ["SECRET_KEY=test-only-key", "FAST_TEST_HASHER=1", "SECURE_SSL_REDIRECT=false"]
+[tool.ruff]
+line-length = 110
+exclude = ["migrations"]
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+ignore = ["B008", "E501"]
