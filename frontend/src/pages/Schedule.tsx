@@ -124,7 +124,7 @@ export default function Schedule() {
           {mode === "week" ? (
             <div className="grid" style={{ gridTemplateColumns: "130px repeat(7, minmax(90px, 1fr))" }}>
               <div className="head">Employee</div>
-              {days.map((d, i) => <div className="head" key={d}>{DOW[(i + weekStart) % 7]} {d.slice(5)}</div>)}
+              {days.map((d, i) => <div className={`head ${d === today ? "today" : ""}`} key={d}>{DOW[(i + weekStart) % 7]} {d.slice(5)}</div>)}
               {rows.map((emp) => (
                 <Row key={emp ?? "open"} label={emp ? empName(emp) : "Open shifts"} days={days}>
                   {(d) => (
