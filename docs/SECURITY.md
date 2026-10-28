@@ -40,7 +40,7 @@ REVOKE UPDATE, DELETE, TRUNCATE ON core_auditlog FROM shiftbase_app;
 - A user belongs to one organization only
 - Audit log is not tamper-evident (no hash chain) and is only DB-protected after the step above
 - No content-security-policy in the Django layer (the Caddyfile adds one); no automated dependency scanning is configured
-- Concurrency protections rely on PostgreSQL row locks; they have been unit-tested logically but the threaded tests have only been written for PostgreSQL CI, not run by the author locally
+- Concurrency protections rely on PostgreSQL row locks; two threaded tests (swap approval, open-shift assignment) pass in CI on PostgreSQL, but other race paths (e.g. simultaneous clock-in, publish) are covered by constraints and code review only
 - Email bodies and in-app notifications contain names and shift times; email is not end-to-end protected
 - No automated retention/deletion jobs (see OPERATIONS.md)
 - Frontend has no automated tests

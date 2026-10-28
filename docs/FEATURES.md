@@ -16,7 +16,7 @@
 
 ## Limitations / not done
 
-- Not verified here: Docker images and compose files, PostgreSQL runs and the two threaded concurrency tests (no Docker or PostgreSQL on the development machine; everything else was run on SQLite)
+- Not verified: Docker images and compose files (no Docker on the development machine). Locally everything ran on SQLite; the full suite, including the two threaded concurrency tests, passes against PostgreSQL 16 in GitHub Actions
 - No payroll integration (CSV export only), no mobile app, no SSO/MFA, no organization self-sign-up (`create_organization` command)
 - "Upcoming shift" reminders are not implemented
 - Organization date format is stored and shown in settings but dates in the UI are rendered ISO-style
