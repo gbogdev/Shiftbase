@@ -65,3 +65,7 @@ Set `DATABASE_URL=postgres://...` to run against PostgreSQL; two concurrency tes
 ## Acknowledgment
 
 Parts of this project were written with the help of an AI coding assistant (Claude Code). The code has not had an independent security review.
+
+## License
+
+[GNU GPL v3.0](LICENSE). Project page: https://gbogdev.github.io/Shiftbase/

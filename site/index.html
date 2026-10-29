@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shiftbase</title>
+<meta name="description" content="Open-source workforce management for shift-based businesses: scheduling, leave, attendance and timesheets.">
+<link rel="icon" href="favicon.svg">
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1c2033;--muted:#5d6480;--accent:#4a56e2;--border:#e2e5f0}
+@media (prefers-color-scheme:dark){:root{--bg:#12141f;--card:#1b1e2e;--text:#e8eaf5;--muted:#9aa1bf;--accent:#8b95ff;--border:#2c3048}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:48px 16px}
+header{display:flex;align-items:center;gap:14px}
+header img{width:48px;height:48px;border-radius:12px}
+h1{margin:0;font-size:2rem}
+.tag{color:var(--muted);margin:.4rem 0 1.5rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin:18px 0}
+h2{margin:0 0 10px;font-size:1.1rem}
+ul{margin:0;padding-left:1.2rem}
+pre{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;overflow:auto;font-size:.85rem}
+a{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:600}
+@media (prefers-color-scheme:dark){.btn{color:#12141f}}
+.muted{color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<main>
+<header><img src="favicon.svg" alt=""><h1>Shiftbase</h1></header>
+<p class="tag">Workforce management for small and medium shift-based businesses.</p>
+<p><a class="btn" href="https://github.com/gbogdev/Shiftbase">View on GitHub</a></p>
+
+<div class="card">
+<h2>What it does</h2>
+<ul>
+<li>Organizations, locations, departments, positions, qualifications; owner / admin / manager / employee roles</li>
+<li>Weekly schedule with drafts, publishing, open shifts, templates and recurring shifts</li>
+<li>Validation: overlaps, leave, qualifications, availability, rest time, weekly hours</li>
+<li>Availability, time off, shift swaps and open-shift applications with approvals</li>
+<li>Clock in/out, breaks, manager corrections, timesheet approval, CSV export</li>
+<li>Notifications, reports, append-only audit log</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>Try it locally</h2>
+<pre>git clone https://github.com/gbogdev/Shiftbase.git
+cd Shiftbase
+python -m venv .venv &amp;&amp; . .venv/bin/activate
+pip install -r backend/requirements-dev.txt
+cd frontend &amp;&amp; npm install &amp;&amp; npm run build &amp;&amp; cd ../backend
+export SECRET_KEY=dev DEBUG=true SECURE_SSL_REDIRECT=false
+python manage.py migrate
+python manage.py seed_demo
+python manage.py runserver</pre>
+<p class="muted">Open http://localhost:8000. The seed command creates a fictional demo business and prints the logins. Docker Compose is also supported; see the README.</p>
+</div>
+
+<div class="card">
+<h2>About this page</h2>
+<p class="muted">This is a static project page. Shiftbase needs a Django server and a database, which GitHub Pages cannot run, so there is no live demo here. It has not had an independent security review; see docs/SECURITY.md in the repository for what is and is not covered.</p>
+</div>
+
+<p class="muted">Licensed under the <a href="https://github.com/gbogdev/Shiftbase/blob/main/LICENSE">GNU GPL v3.0</a>.</p>
+</main>
+</body>
+</html>

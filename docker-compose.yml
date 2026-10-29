@@ -22,6 +22,6 @@ services:
       SECURE_SSL_REDIRECT: "false"
       ALLOWED_HOSTS: localhost,127.0.0.1
     command: sh -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --reload"
-    ports: ["8000:8000"]
+    ports: ["127.0.0.1:8000:8000"]
 volumes:
   pgdata:
