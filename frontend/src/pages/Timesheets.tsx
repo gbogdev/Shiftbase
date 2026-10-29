@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { dayKey, fmtTime, list } from "../api";
-import { Loading, Modal, post, useAction, useLoad, useMe } from "../ui";
+import { Loading, Modal, Person, Status, post, useAction, useLoad, useMe } from "../ui";
 
 export default function Timesheets() {
   const me = useMe();
@@ -33,10 +33,10 @@ export default function Timesheets() {
             const diff = e.scheduled_hours != null && e.clock_out ? e.worked_hours - e.scheduled_hours : null;
             return <tr key={e.id}>
               <td>{e.status === "submitted" && <input type="checkbox" aria-label="Select" checked={sel.includes(e.id)} onChange={() => toggle(e.id)} />}</td>
-              <td>{e.employee_name}</td><td>{dayKey(e.clock_in, tz)}</td><td>{fmtTime(e.clock_in, tz)}</td><td>{e.clock_out ? fmtTime(e.clock_out, tz) : <span className="badge bad">no clock-out</span>}</td>
+              <td><Person name={e.employee_name} /></td><td>{dayKey(e.clock_in, tz)}</td><td>{fmtTime(e.clock_in, tz)}</td><td>{e.clock_out ? fmtTime(e.clock_out, tz) : <span className="badge bad">no clock-out</span>}</td>
               <td>{e.break_minutes}m</td><td>{e.clock_out ? e.worked_hours.toFixed(2) : "—"}</td>
               <td>{e.scheduled_hours != null ? e.scheduled_hours.toFixed(2) : "—"}{diff !== null && Math.abs(diff) > 0.25 && <span className="badge bad"> {diff > 0 ? "+" : ""}{diff.toFixed(2)}h</span>}</td>
-              <td><span className="badge">{e.status}</span></td>
+              <td><Status s={e.status} /></td>
               <td>{e.status !== "approved" && <button onClick={() => setFix(e)}>Correct</button>}</td></tr>;
           })}
         </tbody></table></div>

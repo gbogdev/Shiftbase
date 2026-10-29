@@ -3,7 +3,9 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { api } from "./api";
 import { AcceptInvite, Login, ResetPassword } from "./pages/Auth";
+import { Icon } from "./icons";
 import Employees from "./pages/Employees";
+import Overview from "./pages/Overview";
 import MyWork from "./pages/MyWork";
 import Reports from "./pages/Reports";
 import Requests from "./pages/Requests";
@@ -11,7 +13,7 @@ import Schedule from "./pages/Schedule";
 import Settings from "./pages/Settings";
 import Time from "./pages/Time";
 import Timesheets from "./pages/Timesheets";
-import { atLeast, Me, MeCtx, post } from "./ui";
+import { atLeast, Avatar, Me, MeCtx, post } from "./ui";
 import "./styles.css";
 
 function Bell() {
@@ -23,7 +25,7 @@ function Bell() {
   return (
     <div style={{ position: "relative" }}>
       <button onClick={() => { setOpen(!open); if (!open && unread) post("/notifications/read/").then(() => setTimeout(load, 500)); }}>
-        Notifications{unread ? ` (${unread})` : ""}
+        <Icon name="bell" size={16} /> {unread ? <span className="count">{unread}</span> : "Alerts"}
       </button>
       {open && (
         <div className="panel" style={{ position: "absolute", right: 0, width: 320, zIndex: 5, maxHeight: 360, overflow: "auto" }}>
@@ -48,23 +50,26 @@ function Shell({ me, setMe }: { me: Me; setMe: (m: Me | null) => void }) {
     <MeCtx.Provider value={me}>
       <div className="shell">
         <nav className="nav" aria-label="Main">
-          <div className="brand">Shiftbase</div>
-          <NavLink to="/schedule">Schedule</NavLink>
-          <NavLink to="/my">My shifts &amp; requests</NavLink>
-          <NavLink to="/time">Time clock</NavLink>
-          {mgr && <NavLink to="/requests">Approvals</NavLink>}
-          {mgr && <NavLink to="/timesheets">Timesheets</NavLink>}
-          {mgr && <NavLink to="/employees">Employees</NavLink>}
-          {mgr && <NavLink to="/reports">Reports</NavLink>}
-          {atLeast(me, "admin") && <NavLink to="/settings">Settings</NavLink>}
+          <div className="brand"><span className="logo">S</span>Shiftbase</div>
+          {mgr && <NavLink to="/overview"><Icon name="overview" />Overview</NavLink>}
+          <NavLink to="/schedule"><Icon name="calendar" />Schedule</NavLink>
+          <NavLink to="/my"><Icon name="me" />My shifts &amp; requests</NavLink>
+          <NavLink to="/time"><Icon name="clock" />Time clock</NavLink>
+          {mgr && <div className="navlabel">Manage</div>}
+          {mgr && <NavLink to="/requests"><Icon name="check" />Approvals</NavLink>}
+          {mgr && <NavLink to="/timesheets"><Icon name="sheet" />Timesheets</NavLink>}
+          {mgr && <NavLink to="/employees"><Icon name="users" />Employees</NavLink>}
+          {mgr && <NavLink to="/reports"><Icon name="chart" />Reports</NavLink>}
+          {atLeast(me, "admin") && <NavLink to="/settings"><Icon name="gear" />Settings</NavLink>}
           <div className="who">
-            {me.name || me.email}<br />{me.role} · {me.organization_name}<br />
+            <span className="person"><Avatar name={me.name || me.email} size={30} /><span><strong>{me.name || me.email}</strong><br />{me.role} · {me.organization_name}</span></span><br />
             <button className="link" onClick={async () => { await post("/auth/logout/"); setMe(null); nav("/login"); }}>Sign out</button>
           </div>
         </nav>
         <main className="main">
           <div className="top"><span className="spacer" /><Bell /></div>
           <Routes>
+            <Route path="/overview" element={mgr ? <Overview /> : <Navigate to="/my" />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/my" element={<MyWork />} />
             <Route path="/time" element={<Time />} />
@@ -73,7 +78,7 @@ function Shell({ me, setMe }: { me: Me; setMe: (m: Me | null) => void }) {
             <Route path="/employees" element={mgr ? <Employees /> : <Navigate to="/schedule" />} />
             <Route path="/reports" element={mgr ? <Reports /> : <Navigate to="/schedule" />} />
             <Route path="/settings" element={atLeast(me, "admin") ? <Settings /> : <Navigate to="/schedule" />} />
-            <Route path="*" element={<Navigate to="/schedule" />} />
+            <Route path="*" element={<Navigate to={mgr ? "/overview" : "/my"} />} />
           </Routes>
         </main>
       </div>
@@ -88,7 +93,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={me ? <Navigate to="/schedule" /> : <Login onLogin={setMe} />} />
+        <Route path="/login" element={me ? <Navigate to="/" /> : <Login onLogin={setMe} />} />
         <Route path="/accept-invite" element={<AcceptInvite />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={me ? <Shell me={me} setMe={setMe} /> : <Navigate to="/login" />} />

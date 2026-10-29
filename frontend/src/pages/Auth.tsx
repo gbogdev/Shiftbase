@@ -19,7 +19,8 @@ export function Login({ onLogin }: { onLogin: (m: Me) => void }) {
   };
   return (
     <form className="panel center" onSubmit={submit}>
-      <h1>{forgot ? "Reset password" : "Sign in to Shiftbase"}</h1>
+      <div className="brand" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, fontWeight: 700 }}><span className="logo">S</span>Shiftbase</div>
+      <h1>{forgot ? "Reset password" : "Welcome back"}</h1>
       <label>Email<input type="email" required autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} /></label>
       {!forgot && <label>Password<input type="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} /></label>}
       {a.error && <div className="error" role="alert">{a.error}</div>}

@@ -71,3 +71,29 @@ export function useAction() {
 }
 
 export const post = (path: string, body?: unknown) => api(path, { method: "POST", body: body ?? {} });
+
+/** Stable hue (0-359) per name/id so a person keeps the same colour everywhere. */
+export function hueOf(key: string | number | null | undefined): number {
+  if (key === null || key === undefined) return 215;
+  let h = 0;
+  for (const c of String(key)) h = (h * 31 + c.charCodeAt(0)) % 360;
+  return h;
+}
+
+export function Avatar({ name, size = 28 }: { name: string; size?: number }) {
+  const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0].toUpperCase()).join("");
+  return <span className="av" style={{ ["--h" as string]: hueOf(name), width: size, height: size, fontSize: size * 0.4 }} aria-hidden="true">{initials}</span>;
+}
+
+export function Person({ name }: { name: string }) {
+  return <span className="person"><Avatar name={name} size={24} />{name}</span>;
+}
+
+const TONE: Record<string, string> = {
+  approved: "ok", published: "ok", active: "ok", accepted: "ok",
+  pending: "warn", submitted: "warn", draft: "warn", open: "info",
+  rejected: "bad", cancelled: "muted", inactive: "muted", archived: "muted",
+};
+export function Status({ s }: { s: string }) {
+  return <span className={`pill ${TONE[s] ?? "info"}`}>{s}</span>;
+}

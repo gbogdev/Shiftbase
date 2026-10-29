@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { dayKey, fmtTime, list } from "../api";
-import { Loading, post, useAction, useLoad, useMe } from "../ui";
+import { Loading, Status, post, useAction, useLoad, useMe } from "../ui";
 
 export default function Time() {
   const me = useMe();
@@ -44,7 +44,7 @@ export default function Time() {
           {mine.slice(0, 30).map((e) => (
             <tr key={e.id}><td>{dayKey(e.clock_in, tz)}</td><td>{fmtTime(e.clock_in, tz)}</td><td>{e.clock_out ? fmtTime(e.clock_out, tz) : "—"}</td><td>{e.break_minutes}m</td>
               <td>{e.clock_out ? e.worked_hours.toFixed(2) + "h" : "—"}</td><td>{e.scheduled_hours != null ? e.scheduled_hours.toFixed(2) + "h" : "unscheduled"}</td>
-              <td><span className="badge">{e.status}</span>{" "}{e.status === "open" && e.clock_out && <button className="link" disabled={a.busy} onClick={() => a.run(async () => { await post("/time/submit/", { ids: [e.id] }); await q.reload(); })}>Submit</button>}</td></tr>
+              <td><Status s={e.status} />{" "}{e.status === "open" && e.clock_out && <button className="link" disabled={a.busy} onClick={() => a.run(async () => { await post("/time/submit/", { ids: [e.id] }); await q.reload(); })}>Submit</button>}</td></tr>
           ))}
         </tbody></table></div>
       </Loading>

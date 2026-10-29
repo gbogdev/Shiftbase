@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { addDays, api, ApiError, dayKey, fmtTime, Issue, list, zonedToIso } from "../api";
-import { atLeast, Confirm, Loading, Modal, post, useAction, useLoad, useMe } from "../ui";
+import { Confirm, Loading, Modal, Person, atLeast, hueOf, post, useAction, useLoad, useMe } from "../ui";
 
 type Shift = {
   id: number; location: number; department: number | null; position: number | null; employee: number | null;
@@ -80,8 +80,8 @@ export default function Schedule() {
       draggable={canEdit} onDragStart={() => setDragId(s.id)} onDragEnd={() => { setDragId(null); setOver(""); }}
       tabIndex={0} role="button" aria-label={`${empName(s.employee)} ${fmtTime(s.start, tz)} to ${fmtTime(s.end, tz)}`}
       onClick={() => canEdit && setEditing(s)} onKeyDown={(e) => e.key === "Enter" && canEdit && setEditing(s)}
-      title={s.notes || undefined}>
-      {fmtTime(s.start, tz)}–{fmtTime(s.end, tz)}
+      title={s.notes || undefined} style={{ ["--h" as string]: hueOf(s.employee ? empName(s.employee) : null) }}>
+      <span className="t">{fmtTime(s.start, tz)}–{fmtTime(s.end, tz)}</span>{s.status === "draft" && <em className="tag">draft</em>}
       {s.modified_since_publish && <span className="badge bad" style={{ marginLeft: 4 }}>changed</span>}
       {mode === "month" && <div className="muted">{empName(s.employee)}</div>}
     </div>
@@ -162,7 +162,7 @@ export default function Schedule() {
 
 function Row({ label, days, children }: { label: string; days: string[]; children: (d: string) => React.ReactNode }) {
   return <>
-    <div className="rowname">{label}</div>
+    <div className="rowname">{label === "Open shifts" ? <span className="muted">Open shifts</span> : <Person name={label} />}</div>
     {days.map((d) => children(d))}
   </>;
 }

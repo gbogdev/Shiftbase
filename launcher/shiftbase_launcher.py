@@ -17,6 +17,7 @@ HERE = Path(sys.executable).parent if FROZEN else Path(__file__).resolve().paren
 BUNDLE = Path(getattr(sys, "_MEIPASS", HERE))  # where PyInstaller unpacked bundled files
 ROOT = HERE if FROZEN else HERE.parent
 DATA = HERE / "data"  # database + secret key live next to the exe, never on C:
+SEED_VERSION = "2"  # bump when the demo data changes; older demo databases are rebuilt
 
 
 def free_port(start=8000):
@@ -49,6 +50,11 @@ def main():
     import django
     from django.core.management import call_command
 
+    db, marker = DATA / "shiftbase.sqlite3", DATA / "seed.version"
+    if db.exists() and (not marker.exists() or marker.read_text() != SEED_VERSION):
+        print("Demo data changed in this version - rebuilding the local test database…")
+        db.unlink()
+
     django.setup()
     print("Preparing database…")
     call_command("migrate", verbosity=0)
@@ -56,6 +62,7 @@ def main():
 
     if not Organization.objects.exists():
         call_command("seed_demo")
+    marker.write_text(SEED_VERSION)
 
     from django.core.wsgi import get_wsgi_application
     from waitress import serve
@@ -63,7 +70,9 @@ def main():
     port = free_port()
     url = f"http://localhost:{port}/"
     print(f"\nShiftbase is running at {url}")
-    print("Demo logins (password: demo-password-123): owner@demo.test, manager@demo.test, staff@demo.test")
+    print("Demo logins (password: demo-password-123): manager@demo.test, owner@demo.test,")
+    print("  or any employee: priya@demo.test, tom@demo.test, lena@demo.test, jamal@demo.test, chloe@demo.test,")
+    print("  ravi@demo.test, sofia@demo.test, ben@demo.test, aiko@demo.test, marta@demo.test")
     print(f"Data folder: {DATA}  (delete it to reset to fresh demo data)")
     print("Close this window or press Ctrl+C to stop.\n")
     threading.Thread(target=lambda: (time.sleep(1.5), webbrowser.open(url)), daemon=True).start()

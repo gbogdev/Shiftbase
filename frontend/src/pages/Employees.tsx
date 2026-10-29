@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { api, list } from "../api";
-import { atLeast, Confirm, Loading, Modal, post, useAction, useLoad, useMe } from "../ui";
+import { Confirm, Loading, Modal, Person, Status, atLeast, post, useAction, useLoad, useMe } from "../ui";
 
 export default function Employees() {
   const me = useMe();
@@ -27,8 +27,8 @@ export default function Employees() {
       <Loading loading={q.loading} error={q.error} empty={!q.data?.emps.length}>
         <div className="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Position</th><th>Locations</th><th>Hours</th><th>Status</th><th>Account</th><th /></tr></thead><tbody>
           {q.data?.emps.map((e: any) => (
-            <tr key={e.id}><td>{e.name}</td><td>{e.email}</td><td>{nm(q.data!.depts, e.department)}</td><td>{nm(q.data!.poss, e.position)}</td>
-              <td>{e.locations.map((l: number) => nm(q.data!.locs, l)).join(", ")}</td><td>{e.contracted_hours}</td><td><span className={`badge ${e.status !== "active" ? "draft" : ""}`}>{e.status}</span></td>
+            <tr key={e.id}><td><Person name={e.name} /></td><td>{e.email}</td><td>{nm(q.data!.depts, e.department)}</td><td>{nm(q.data!.poss, e.position)}</td>
+              <td>{e.locations.map((l: number) => nm(q.data!.locs, l)).join(", ")}</td><td>{e.contracted_hours}</td><td><Status s={e.status} /></td>
               <td>{e.user ? "Active" : admin ? <button className="link" onClick={() => a.run(async () => setInvite(await post("/invitations/", { email: e.email, employee: e.id })))}>Invite</button> : "—"}</td>
               <td>{admin && e.status !== "archived" && <>
                 <button onClick={() => setEdit(e)}>Edit</button>{" "}

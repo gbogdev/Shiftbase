@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { api, dayKey, fmtTime, list } from "../api";
-import { Confirm, Loading, post, useAction, useLoad, useMe } from "../ui";
+import { Confirm, Loading, Status, post, useAction, useLoad, useMe } from "../ui";
 
 const DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -48,7 +48,7 @@ export default function MyWork() {
       {open.length === 0 ? <div className="empty">No open shifts right now.</div> : (
         <table><tbody>{open.map((s: any) => {
           const applied = d?.apps.some((p: any) => p.shift === s.id && p.employee === me.employee_id && p.status === "pending");
-          return <tr key={s.id}><td>{when(s)}</td><td>{applied ? <span className="badge">Applied</span> : <button disabled={a.busy} onClick={() => act(() => post("/applications/", { shift: s.id }))}>Apply</button>}</td></tr>;
+          return <tr key={s.id}><td>{when(s)}</td><td>{applied ? <span className="pill info">Applied</span> : <button disabled={a.busy} onClick={() => act(() => post("/applications/", { shift: s.id }))}>Apply</button>}</td></tr>;
         })}</tbody></table>
       )}
 
@@ -58,7 +58,7 @@ export default function MyWork() {
           {d?.swaps.map((r: any) => {
             const s = shiftOf(r.shift);
             const canAccept = r.status === "pending" && r.from_employee !== me.employee_id && (!r.to_employee || r.to_employee === me.employee_id);
-            return <tr key={r.id}><td>{s ? when(s) : `#${r.shift}`}</td><td>{name(r.from_employee)}</td><td>{r.to_employee ? name(r.to_employee) : "Anyone"}</td><td><span className="badge">{r.status}</span></td>
+            return <tr key={r.id}><td>{s ? when(s) : `#${r.shift}`}</td><td>{name(r.from_employee)}</td><td>{r.to_employee ? name(r.to_employee) : "Anyone"}</td><td><Status s={r.status} /></td>
               <td>{canAccept && <button disabled={a.busy} onClick={() => act(() => post(`/swaps/${r.id}/accept/`))}>Accept</button>}</td></tr>;
           })}
         </tbody></table>
@@ -79,7 +79,7 @@ export default function MyWork() {
       {d?.leave.length ? (
         <table><thead><tr><th>Dates</th><th>Type</th><th>Status</th><th>Note</th><th /></tr></thead><tbody>
           {d.leave.filter((r: any) => r.employee === me.employee_id).map((r: any) => (
-            <tr key={r.id}><td>{r.start_date} → {r.end_date}</td><td>{d.types.find((t: any) => t.id === r.leave_type)?.name}</td><td><span className="badge">{r.status}</span></td><td>{r.decision_note}</td>
+            <tr key={r.id}><td>{r.start_date} → {r.end_date}</td><td>{d.types.find((t: any) => t.id === r.leave_type)?.name}</td><td><Status s={r.status} /></td><td>{r.decision_note}</td>
               <td>{r.status === "pending" && <button onClick={() => setCancel(r.id)}>Cancel</button>}</td></tr>
           ))}
         </tbody></table>
