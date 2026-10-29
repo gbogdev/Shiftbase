@@ -50,7 +50,7 @@ function Shell({ me, setMe }: { me: Me; setMe: (m: Me | null) => void }) {
     <MeCtx.Provider value={me}>
       <div className="shell">
         <nav className="nav" aria-label="Main">
-          <div className="brand"><span className="logo">S</span>Shiftbase</div>
+          <div className="brand"><img className="logo" src="/static/favicon.svg" alt="" />Shiftbase</div>
           {mgr && <NavLink to="/overview"><Icon name="overview" />Overview</NavLink>}
           <NavLink to="/schedule"><Icon name="calendar" />Schedule</NavLink>
           <NavLink to="/my"><Icon name="me" />My shifts &amp; requests</NavLink>

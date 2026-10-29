@@ -14,7 +14,7 @@ Push-Location "$repo\frontend"; npm install --no-audit --no-fund; npm run build;
 
 $hidden = @("config", "core", "people", "scheduling", "leave", "attendance", "notifications", "reports") |
     ForEach-Object { "--collect-submodules", $_ }
-& $py -m PyInstaller --noconfirm --clean --name Shiftbase --console `
+& $py -m PyInstaller --noconfirm --clean --name Shiftbase --console --icon "$repo\launcher\shiftbase.ico" `
     --distpath $out --workpath "$cache\pyi-work" --specpath "$cache\pyi-spec" `
     --paths "$repo\backend" @hidden `
     --collect-all rest_framework --collect-data tzdata --collect-submodules environ `
