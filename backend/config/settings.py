@@ -75,7 +75,7 @@ TIME_ZONE = "UTC"
 LANGUAGE_CODE = "en-us"
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-FRONTEND_DIST = BASE_DIR.parent / "frontend" / "dist"
+FRONTEND_DIST = Path(env("FRONTEND_DIST", default=str(BASE_DIR.parent / "frontend" / "dist")))
 if FRONTEND_DIST.exists():
     STATICFILES_DIRS = [FRONTEND_DIST]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

@@ -43,6 +43,10 @@ docker compose up --build           # http://localhost:8000 (development setting
 docker compose exec web python manage.py seed_demo
 ```
 
+## Windows test launcher
+
+`launcher/build.ps1` builds a self-contained `Shiftbase.exe` (PyInstaller + waitress, SQLite, demo data, opens the browser) for local testing only. See `launcher/shiftbase_launcher.py`.
+
 ## Tests and checks
 
 ```bash
