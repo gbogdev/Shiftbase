@@ -4,6 +4,15 @@ Workforce management web app for small and medium shift-based businesses: employ
 
 Django + Django REST Framework + PostgreSQL backend, React + TypeScript (Vite) frontend, served as one application.
 
+## Screenshots
+
+Taken from the fictional demo data created by `seed_demo` (manager view).
+
+![Overview](docs/screenshots/overview.png)
+![Weekly schedule](docs/screenshots/schedule.png)
+![Approvals](docs/screenshots/approvals.png)
+![Timesheets](docs/screenshots/timesheets.png)
+
 ## Main features
 
 - Organizations with locations, departments, positions, qualifications; roles: owner, admin, manager, employee (manager access can be limited to locations/departments)

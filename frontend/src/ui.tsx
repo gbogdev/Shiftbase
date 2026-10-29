@@ -77,11 +77,11 @@ export function hueOf(key: string | number | null | undefined): number {
   if (key === null || key === undefined) return 215;
   let h = 0;
   for (const c of String(key)) h = (h * 31 + c.charCodeAt(0)) % 360;
-  return h;
+  return (h * 137) % 360; // spread near-identical keys (e.g. "Employee 1", "Employee 2") around the wheel
 }
 
 export function Avatar({ name, size = 28 }: { name: string; size?: number }) {
-  const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0].toUpperCase()).join("");
+  const initials = name.match(/\d+$/)?.[0] ?? name.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0].toUpperCase()).join("");
   return <span className="av" style={{ ["--h" as string]: hueOf(name), width: size, height: size, fontSize: size * 0.4 }} aria-hidden="true">{initials}</span>;
 }
 

@@ -21,16 +21,16 @@ TZ = ZoneInfo("Europe/London")
 
 # name, department, position, qualifications, hourly rate
 PEOPLE = [
-    ("Priya Nair", "Front of house", "Barista", [], 13.5),
-    ("Tom Becker", "Front of house", "Barista", [], 12.75),
-    ("Lena Ortiz", "Kitchen", "Cook", ["Food hygiene"], 15.0),
-    ("Jamal Reid", "Kitchen", "Cook", ["Food hygiene"], 14.5),
-    ("Chloe Dubois", "Front of house", "Server", [], 12.5),
-    ("Ravi Patel", "Front of house", "Server", ["First aid"], 12.5),
-    ("Sofia Rossi", "Kitchen", "Kitchen assistant", ["Food hygiene"], 11.8),
-    ("Ben Carter", "Front of house", "Barista", ["First aid"], 12.75),
-    ("Aiko Tanaka", "Front of house", "Server", [], 12.5),
-    ("Marta Novak", "Kitchen", "Cook", ["Food hygiene", "First aid"], 15.5),
+    ("Employee 1", "Front of house", "Barista", [], 13.5),
+    ("Employee 2", "Front of house", "Barista", [], 12.75),
+    ("Employee 3", "Kitchen", "Cook", ["Food hygiene"], 15.0),
+    ("Employee 4", "Kitchen", "Cook", ["Food hygiene"], 14.5),
+    ("Employee 5", "Front of house", "Server", [], 12.5),
+    ("Employee 6", "Front of house", "Server", ["First aid"], 12.5),
+    ("Employee 7", "Kitchen", "Kitchen assistant", ["Food hygiene"], 11.8),
+    ("Employee 8", "Front of house", "Barista", ["First aid"], 12.75),
+    ("Employee 9", "Front of house", "Server", [], 12.5),
+    ("Employee 10", "Kitchen", "Cook", ["Food hygiene", "First aid"], 15.5),
 ]
 PATTERNS = {
     "Barista": [("07:00", "15:00"), ("12:00", "20:00")],
@@ -74,7 +74,7 @@ class Command(BaseCommand):
 
         emps = []
         for i, (name, dept, pos, qs, rate) in enumerate(PEOPLE):
-            email = name.split()[0].lower() + "@demo.test"
+            email = name.replace(" ", "").lower() + "@demo.test"
             user = User.objects.create_user(email, PASSWORD, name=name, organization=org, role="employee")
             e = Employee.objects.create(organization=org, user=user, name=name, email=email, department=depts[dept],
                                         position=poss[pos], contracted_hours=[20, 24, 32, 36, 40][i % 5], hourly_rate=rate,
@@ -84,7 +84,7 @@ class Command(BaseCommand):
                 e.locations.add(rv if i % 2 == 0 else hs)
             e.qualifications.set([quals[q] for q in qs])
             emps.append(e)
-        by_name = {e.name.split()[0]: e for e in emps}
+        by_name = {e.name.split()[-1]: e for e in emps}
 
         # --- shifts: last week, this week, next week; 5 days each, one day-pair off per person ---
         shifts = {}  # (employee index, date) -> Shift
@@ -119,12 +119,12 @@ class Command(BaseCommand):
 
         def nxt(name, skip=0):
             """First published shift next week for this person (their days off differ)."""
-            i = [p[0].split()[0] for p in PEOPLE].index(name)
+            i = [p[0].split()[-1] for p in PEOPLE].index(name)
             found = [shifts[(i, next_mon + timedelta(days=d))] for d in range(4) if (i, next_mon + timedelta(days=d)) in shifts]
             return found[skip] if len(found) > skip else None
 
         # one published shift edited after publishing (shows the "changed" flag and history)
-        changed = nxt("Marta", 1)
+        changed = nxt("10", 1)
         if changed:
             before = {"end": changed.end.isoformat()}
             changed.end += timedelta(hours=1)
@@ -133,10 +133,10 @@ class Command(BaseCommand):
             ShiftChange.objects.create(shift=changed, actor=manager, kind="edited", before=before, after={"end": changed.end.isoformat()})
 
         # --- availability ---
-        Availability.objects.create(employee=by_name["Tom"], weekday=2, start_time="16:00", end_time="23:59", available=False)
-        Availability.objects.create(employee=by_name["Chloe"], weekday=5, start_time="00:00", end_time="23:59", available=False)
+        Availability.objects.create(employee=by_name["2"], weekday=2, start_time="16:00", end_time="23:59", available=False)
+        Availability.objects.create(employee=by_name["5"], weekday=5, start_time="00:00", end_time="23:59", available=False)
         for wd in range(5):
-            Availability.objects.create(employee=by_name["Ben"], weekday=wd, start_time="06:00", end_time="16:00", available=True)
+            Availability.objects.create(employee=by_name["8"], weekday=wd, start_time="06:00", end_time="16:00", available=True)
 
         # --- leave ---
         def leave(emp, lt, d1, d2, status, reason="", note=""):
@@ -148,27 +148,27 @@ class Command(BaseCommand):
             return r
 
         far = monday + timedelta(days=21)
-        leave(by_name["Lena"], annual, far, far + timedelta(days=4), "approved", "Family holiday", "Enjoy!")
-        leave(by_name["Tom"], annual, far + timedelta(days=1), far + timedelta(days=2), "pending", "Moving house")
-        leave(by_name["Aiko"], annual, far + timedelta(days=7), far + timedelta(days=13), "pending", "Trip abroad")
-        leave(by_name["Ravi"], unpaid, far + timedelta(days=2), far + timedelta(days=3), "rejected", "Concert", "Too many people already off that week.")
+        leave(by_name["3"], annual, far, far + timedelta(days=4), "approved", "Family holiday", "Enjoy!")
+        leave(by_name["2"], annual, far + timedelta(days=1), far + timedelta(days=2), "pending", "Moving house")
+        leave(by_name["9"], annual, far + timedelta(days=7), far + timedelta(days=13), "pending", "Trip abroad")
+        leave(by_name["6"], unpaid, far + timedelta(days=2), far + timedelta(days=3), "rejected", "Concert", "Too many people already off that week.")
         chloe_off = monday - timedelta(days=7) + timedelta(days=4 % 7)  # a day she has no shift last week
-        leave(by_name["Chloe"], sick, chloe_off, chloe_off, "approved", "Migraine")
-        leave(by_name["Marta"], annual, far + timedelta(days=3), far + timedelta(days=3), "pending", "Appointment")
+        leave(by_name["5"], sick, chloe_off, chloe_off, "approved", "Migraine")
+        leave(by_name["10"], annual, far + timedelta(days=3), far + timedelta(days=3), "pending", "Appointment")
 
         # --- swaps and open-shift applications (next week's published shifts) ---
-        if (a := nxt("Priya")) and (b := by_name["Tom"]):
-            SwapRequest.objects.create(organization=org, shift=a, from_employee=by_name["Priya"], to_employee=b)
-        if a := nxt("Lena"):
-            SwapRequest.objects.create(organization=org, shift=a, from_employee=by_name["Lena"])
-        if a := nxt("Jamal"):
-            SwapRequest.objects.create(organization=org, shift=a, from_employee=by_name["Jamal"], to_employee=by_name["Marta"], status="accepted")
+        if (a := nxt("1")) and (b := by_name["2"]):
+            SwapRequest.objects.create(organization=org, shift=a, from_employee=by_name["1"], to_employee=b)
+        if a := nxt("3"):
+            SwapRequest.objects.create(organization=org, shift=a, from_employee=by_name["3"])
+        if a := nxt("4"):
+            SwapRequest.objects.create(organization=org, shift=a, from_employee=by_name["4"], to_employee=by_name["10"], status="accepted")
         if len(open_shifts) >= 2:
-            for who, sh in [("Ben", open_shifts[0]), ("Aiko", open_shifts[0]), ("Sofia", open_shifts[1])]:
+            for who, sh in [("8", open_shifts[0]), ("9", open_shifts[0]), ("7", open_shifts[1])]:
                 OpenShiftApplication.objects.create(organization=org, shift=sh, employee=by_name[who])
 
         # --- time entries for shifts that have started ---
-        skip_today = by_name["Aiko"]
+        skip_today = by_name["9"]
         for (i, day), sh in sorted(shifts.items(), key=lambda kv: kv[1].start):
             if sh.status != "published" or sh.start > now:
                 continue
@@ -204,7 +204,7 @@ class Command(BaseCommand):
                                         body="Your shifts for next week are published.", dedupe_key="seed-publish",
                                         read_at=now if i % 3 == 0 else None)
         for key, title, body in [("seed-l", "Late arrival", "A team member clocked in late."),
-                                 ("seed-m", "Missed clock-out", "Aiko Tanaka has not clocked out."),
+                                 ("seed-m", "Missed clock-out", "Employee 9 has not clocked out."),
                                  ("seed-p", "Leave request", "3 leave requests are waiting for a decision.")]:
             Notification.objects.create(user=manager, kind="attendance_issue", title=title, body=body, dedupe_key=key)
         audit.record(manager, "schedule.publish", hs, count=35)
@@ -212,4 +212,4 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Created Demo Cafe: 10 employees, {Shift.objects.count()} shifts, {LeaveRequest.objects.count()} leave requests, "
                           f"{SwapRequest.objects.count()} swaps, {TimeEntry.objects.count()} time entries.")
-        self.stdout.write(f"Logins (password {PASSWORD}): owner@demo.test, manager@demo.test, and employees such as priya@demo.test, tom@demo.test.")
+        self.stdout.write(f"Logins (password {PASSWORD}): owner@demo.test, manager@demo.test, and employees such as employee1@demo.test, employee2@demo.test.")
